@@ -1,16 +1,20 @@
+export type Tab = "search" | "favorites" | "history" | "workspace" | "settings" | "datasets" | "community";
+
 type SidebarProps = {
+  activeTab: Tab;
+  onNavigate: (tab: Tab) => void;
   onLogout: () => void;
 };
 
-const NAV_ITEMS = [
-  { icon: "search", label: "Search", active: true },
-  { icon: "grade", label: "Favorites", active: false },
-  { icon: "history", label: "History", active: false },
-  { icon: "biotech", label: "Workspace", active: false },
-  { icon: "settings", label: "Settings", active: false },
+const NAV_ITEMS: { tab: Tab; icon: string; label: string }[] = [
+  { tab: "search", icon: "search", label: "Search" },
+  { tab: "favorites", icon: "grade", label: "Favorites" },
+  { tab: "history", icon: "history", label: "History" },
+  { tab: "workspace", icon: "biotech", label: "Workspace" },
+  { tab: "settings", icon: "settings", label: "Settings" },
 ];
 
-export function Sidebar({ onLogout }: SidebarProps) {
+export function Sidebar({ activeTab, onNavigate, onLogout }: SidebarProps) {
   return (
     <nav className="hidden md:flex fixed left-0 top-0 h-screen w-64 flex-col py-8 bg-surface-container-low border-r border-outline-variant z-20">
       <div className="px-6 mb-8">
@@ -23,22 +27,25 @@ export function Sidebar({ onLogout }: SidebarProps) {
       </div>
 
       <ul className="flex-1 px-4 space-y-1">
-        {NAV_ITEMS.map((item) => (
-          <li key={item.label}>
-            <a
-              href="#"
-              onClick={(e) => e.preventDefault()}
-              className={
-                item.active
-                  ? "flex items-center gap-3 px-3 py-2.5 rounded-lg text-secondary font-bold border-r-4 border-secondary bg-secondary-container/20"
-                  : "flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:text-secondary hover:bg-surface-container-high transition-all"
-              }
-            >
-              <span className="material-symbols-outlined">{item.icon}</span>
-              <span className="font-mono text-sm">{item.label}</span>
-            </a>
-          </li>
-        ))}
+        {NAV_ITEMS.map((item) => {
+          const active = item.tab === activeTab;
+          return (
+            <li key={item.tab}>
+              <button
+                type="button"
+                onClick={() => onNavigate(item.tab)}
+                className={
+                  active
+                    ? "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-secondary font-bold border-r-4 border-secondary bg-secondary-container/20"
+                    : "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:text-secondary hover:bg-surface-container-high transition-all"
+                }
+              >
+                <span className="material-symbols-outlined">{item.icon}</span>
+                <span className="font-mono text-sm">{item.label}</span>
+              </button>
+            </li>
+          );
+        })}
       </ul>
 
       <div className="px-4 pt-4 border-t border-outline-variant/30">
