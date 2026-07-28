@@ -14,22 +14,27 @@ export function SearchBar({ onSearch, loading }: SearchBarProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex gap-2">
+    <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3">
       <label htmlFor="protein-search" className="sr-only">
         Search proteins
       </label>
-      <input
-        id="protein-search"
-        type="search"
-        placeholder="Search proteins (e.g. insulin, hemoglobin, BRCA1)"
-        className="flex-1 rounded border px-3 py-2"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-      />
+      <div className="relative flex-1">
+        <span className="material-symbols-outlined absolute inset-y-0 left-4 flex items-center text-on-surface-variant pointer-events-none">
+          search
+        </span>
+        <input
+          id="protein-search"
+          type="search"
+          placeholder="Search proteins (e.g. insulin, hemoglobin, BRCA1)"
+          className="block w-full pl-11 pr-4 py-3.5 bg-surface-container-lowest border border-outline-variant rounded-lg text-on-surface placeholder-on-surface-variant focus:ring-2 focus:ring-secondary focus:border-secondary transition-all shadow-sm outline-none"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+        />
+      </div>
       <button
         type="submit"
         disabled={loading}
-        className="rounded bg-black px-4 py-2 text-white disabled:opacity-50"
+        className="bg-primary text-on-primary px-6 py-3.5 rounded-lg hover:opacity-90 transition-opacity font-bold shadow-sm whitespace-nowrap disabled:opacity-50"
       >
         {loading ? "Searching…" : "Search"}
       </button>

@@ -9,11 +9,11 @@ type ProteinListProps = {
 
 export function ProteinList({ proteins, isFavorite, onToggleFavorite }: ProteinListProps) {
   if (proteins.length === 0) {
-    return <p className="text-sm text-gray-600">No results yet — try a search above.</p>;
+    return <p className="text-sm text-on-surface-variant italic">No results yet — try a search above.</p>;
   }
 
   return (
-    <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+    <ul className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
       {proteins.map((protein) => (
         <ProteinCard
           key={protein.accession}
