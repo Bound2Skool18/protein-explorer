@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 type TopNavBarProps = {
-  userEmail: string;
+  userEmail: string | null;
   onMenuClick: () => void;
 };
 
@@ -16,7 +16,7 @@ const LINKS = [
 
 export function TopNavBar({ userEmail, onMenuClick }: TopNavBarProps) {
   const pathname = usePathname();
-  const initial = userEmail.charAt(0).toUpperCase();
+  const initial = userEmail?.charAt(0).toUpperCase();
 
   return (
     <header className="bg-surface-container-lowest border-b border-outline-variant sticky top-0 z-10">
@@ -31,7 +31,7 @@ export function TopNavBar({ userEmail, onMenuClick }: TopNavBarProps) {
 
         <nav className="hidden md:flex items-center gap-6 h-full">
           {LINKS.map((link) => {
-            const active = pathname === link.href;
+            const active = link.href === pathname;
             return (
               <Link
                 key={link.href}
@@ -55,12 +55,22 @@ export function TopNavBar({ userEmail, onMenuClick }: TopNavBarProps) {
           >
             <span className="material-symbols-outlined">notifications</span>
           </button>
-          <div
-            title={userEmail}
-            className="ml-2 w-8 h-8 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-heading text-sm font-bold border border-outline-variant"
-          >
-            {initial}
-          </div>
+          {userEmail ? (
+            <div
+              title={userEmail}
+              className="ml-2 w-8 h-8 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-heading text-sm font-bold border border-outline-variant"
+            >
+              {initial}
+            </div>
+          ) : (
+            <Link
+              href="/login"
+              title="Log in"
+              className="ml-2 w-8 h-8 rounded-full bg-surface-container-low text-on-surface-variant flex items-center justify-center border border-outline-variant hover:text-on-surface transition-colors"
+            >
+              <span className="material-symbols-outlined text-[18px]">person</span>
+            </Link>
+          )}
         </div>
       </div>
     </header>

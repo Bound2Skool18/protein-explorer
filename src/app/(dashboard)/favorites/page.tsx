@@ -3,10 +3,11 @@
 import { useAuth } from "@/viewmodels/useAuth";
 import { useFavorites } from "@/viewmodels/useFavorites";
 import { ProteinList } from "@/views/ProteinList";
+import { SignInPrompt } from "@/views/SignInPrompt";
 import type { Protein } from "@/models/Protein";
 
 export default function FavoritesPage() {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const { favorites, isFavorite, addFavorite, removeFavorite } = useFavorites(user?.uid);
 
   function toggleFavorite(protein: Protein) {
@@ -15,6 +16,14 @@ export default function FavoritesPage() {
     } else {
       addFavorite(protein);
     }
+  }
+
+  if (loading) {
+    return null;
+  }
+
+  if (!user) {
+    return <SignInPrompt from="/favorites" message="Sign in to view your saved proteins." />;
   }
 
   return (

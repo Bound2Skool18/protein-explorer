@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/viewmodels/useAuth";
 import { useFavorites } from "@/viewmodels/useFavorites";
 import { useProteinSearch } from "@/viewmodels/useProteinSearch";
@@ -16,6 +16,7 @@ export function SearchPageContent() {
   const { isFavorite, addFavorite, removeFavorite } = useFavorites(user?.uid);
   const { addEntry } = useSearchHistory(user?.uid);
   const searchParams = useSearchParams();
+  const router = useRouter();
   const initialQuery = searchParams.get("q") ?? "";
 
   function runSearch(query: string) {
@@ -31,6 +32,10 @@ export function SearchPageContent() {
   }, [initialQuery]);
 
   function toggleFavorite(protein: Protein) {
+    if (!user) {
+      router.push("/login?from=%2Fsearch");
+      return;
+    }
     if (isFavorite(protein.accession)) {
       removeFavorite(protein.accession);
     } else {

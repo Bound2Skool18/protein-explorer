@@ -4,14 +4,23 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/viewmodels/useAuth";
 import { useSearchHistory } from "@/viewmodels/useSearchHistory";
 import { HistoryPanel } from "@/views/HistoryPanel";
+import { SignInPrompt } from "@/views/SignInPrompt";
 
 export default function HistoryPage() {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const { history, clearHistory } = useSearchHistory(user?.uid);
   const router = useRouter();
 
   function selectQuery(query: string) {
     router.push(`/search?q=${encodeURIComponent(query)}`);
+  }
+
+  if (loading) {
+    return null;
+  }
+
+  if (!user) {
+    return <SignInPrompt from="/history" message="Sign in to view your search history." />;
   }
 
   return (

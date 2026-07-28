@@ -4,14 +4,19 @@ import { useAuth } from "@/viewmodels/useAuth";
 import { useFavorites } from "@/viewmodels/useFavorites";
 import { useSearchHistory } from "@/viewmodels/useSearchHistory";
 import { SettingsPanel } from "@/views/SettingsPanel";
+import { SignInPrompt } from "@/views/SignInPrompt";
 
 export default function SettingsPage() {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const { favorites } = useFavorites(user?.uid);
   const { clearHistory } = useSearchHistory(user?.uid);
 
-  if (!user) {
+  if (loading) {
     return null;
+  }
+
+  if (!user) {
+    return <SignInPrompt from="/settings" message="Sign in to view account settings." />;
   }
 
   return (

@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 type SidebarProps = {
   open: boolean;
   onClose: () => void;
+  userEmail: string | null;
   onLogout: () => void;
 };
 
@@ -17,7 +18,7 @@ const NAV_ITEMS = [
   { href: "/settings", icon: "settings", label: "Settings" },
 ];
 
-export function Sidebar({ open, onClose, onLogout }: SidebarProps) {
+export function Sidebar({ open, onClose, userEmail, onLogout }: SidebarProps) {
   const pathname = usePathname();
 
   return (
@@ -73,14 +74,25 @@ export function Sidebar({ open, onClose, onLogout }: SidebarProps) {
         </ul>
 
         <div className="px-4 pt-4 border-t border-outline-variant/30">
-          <button
-            type="button"
-            onClick={onLogout}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:text-secondary hover:bg-surface-container-high transition-all"
-          >
-            <span className="material-symbols-outlined">logout</span>
-            <span className="font-mono text-sm">Log Out</span>
-          </button>
+          {userEmail ? (
+            <button
+              type="button"
+              onClick={onLogout}
+              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:text-secondary hover:bg-surface-container-high transition-all"
+            >
+              <span className="material-symbols-outlined">logout</span>
+              <span className="font-mono text-sm">Log Out</span>
+            </button>
+          ) : (
+            <Link
+              href="/login"
+              onClick={onClose}
+              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-secondary font-bold hover:bg-surface-container-high transition-all"
+            >
+              <span className="material-symbols-outlined">login</span>
+              <span className="font-mono text-sm">Log In</span>
+            </Link>
+          )}
         </div>
       </nav>
     </>
