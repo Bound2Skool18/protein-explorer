@@ -12,6 +12,7 @@ type SidebarProps = {
 
 const NAV_ITEMS = [
   { href: "/search", icon: "search", label: "Search" },
+  { href: "/assistant", icon: "smart_toy", label: "Assistant" },
   { href: "/favorites", icon: "grade", label: "Favorites" },
   { href: "/history", icon: "history", label: "History" },
   { href: "/workspace", icon: "biotech", label: "Workspace" },
