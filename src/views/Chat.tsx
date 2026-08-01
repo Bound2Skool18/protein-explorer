@@ -86,11 +86,11 @@ export function Chat() {
     busy && lastMessage?.role === "assistant" && lastMessageText.length === 0 && !lastHasToolPart;
 
   return (
-    <div className="flex flex-col h-[70vh] max-h-[700px]">
+    <div className="flex flex-col h-[70dvh] max-h-[700px]">
       <div
         ref={scrollRef}
         onScroll={handleScroll}
-        className="flex-1 overflow-y-auto space-y-4 pb-4"
+        className="flex-1 overflow-y-auto overscroll-contain space-y-4 pb-4"
       >
         {messages.length === 0 && (
           <div className="py-10 text-center">

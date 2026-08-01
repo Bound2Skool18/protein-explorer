@@ -14,7 +14,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }
 
   return (
-    <div className="bg-background text-on-background flex h-screen overflow-hidden">
+    <div className="bg-background text-on-background flex h-dvh overflow-hidden">
       <Sidebar
         open={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
