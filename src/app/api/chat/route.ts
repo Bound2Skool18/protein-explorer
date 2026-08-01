@@ -2,9 +2,12 @@ import { convertToModelMessages, stepCountIs, streamText, type UIMessage } from 
 import { CHAT_MODEL, SYSTEM_PROMPT } from "@/services/chat-config";
 import { chatTools } from "@/services/chat-tools";
 
+
 export const maxDuration = 30;
 
+
 export async function POST(req: Request) {
+
   const { messages }: { messages: UIMessage[] } = await req.json();
 
   const result = streamText({

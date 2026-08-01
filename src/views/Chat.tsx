@@ -14,10 +14,21 @@ import {
 
 const BOTTOM_THRESHOLD_PX = 80;
 
+// First-run empty state: click-to-send examples that seed the conversation
+// (onboarding, not an apology).
+const EXAMPLE_PROMPTS = [
+  "What is insulin?",
+  "What does the BRCA1 gene do?",
+  "Explain what a kinase is",
+  "Tell me about hemoglobin",
+];
+
 export function Chat() {
   // <ChatMessage> makes message.parts typed: `part.input`/`part.output` on a
   // tool part are the real Zod/return types, not `any`.
-  const { messages, sendMessage, status, stop } = useChat<ChatMessage>({
+  // `error` is set when a request fails; `regenerate` retries the LAST message
+  // (not the whole conversation).
+  const { messages, sendMessage, status, stop, error, regenerate } = useChat<ChatMessage>({
     transport: new DefaultChatTransport({ api: "/api/chat" }),
   });
   const [input, setInput] = useState("");
@@ -82,9 +93,23 @@ export function Chat() {
         className="flex-1 overflow-y-auto space-y-4 pb-4"
       >
         {messages.length === 0 && (
-          <p className="text-sm text-on-surface-variant italic py-8 text-center">
-            Ask about a protein, a gene, or general molecular biology.
-          </p>
+          <div className="py-10 text-center">
+            <p className="text-sm text-on-surface-variant">
+              Ask about a protein, a gene, or molecular biology — or start with one of these:
+            </p>
+            <div className="mt-4 flex flex-wrap justify-center gap-2">
+              {EXAMPLE_PROMPTS.map((example) => (
+                <button
+                  key={example}
+                  type="button"
+                  onClick={() => sendMessage({ text: example })}
+                  className="rounded-full border border-outline-variant bg-surface-container-lowest px-3.5 py-1.5 text-sm text-on-surface hover:bg-surface-container-low hover:border-secondary active:scale-95 transition-all outline-none focus-visible:ring-2 focus-visible:ring-secondary"
+                >
+                  {example}
+                </button>
+              ))}
+            </div>
+          </div>
         )}
 
         {messages.map((message) => {
@@ -150,6 +175,35 @@ export function Chat() {
                 <span className="w-1.5 h-1.5 rounded-full bg-on-surface-variant animate-bounce [animation-delay:-0.15s]" />
                 <span className="w-1.5 h-1.5 rounded-full bg-on-surface-variant animate-bounce" />
               </span>
+            </div>
+          </div>
+        )}
+
+        {/* Designed error + retry. `tool-fade` = calm entrance, no red flash-bang.
+            Clicking Retry calls regenerate(): status leaves "error", this card
+            unmounts, and the reply streams again. Disabled while busy so a
+            double-click can't fire two retries. */}
+        {status === "error" && (
+          <div className="flex justify-start">
+            <div className="tool-fade max-w-[85%] sm:max-w-[75%] rounded-xl rounded-bl-sm border border-error/40 bg-error-container/30 px-4 py-3">
+              <div className="flex items-center gap-2 text-on-error-container">
+                <span className="material-symbols-outlined text-[18px]">error</span>
+                <span className="text-sm font-medium">Couldn&apos;t get a reply</span>
+              </div>
+              <p className="mt-1 text-xs text-on-surface-variant">
+                {error?.message?.includes("fetch")
+                  ? "Looks like a network problem. Check your connection and try again."
+                  : "The assistant ran into a problem — this can happen under heavy load."}
+              </p>
+              <button
+                type="button"
+                onClick={() => regenerate()}
+                disabled={busy}
+                className="mt-2 inline-flex items-center gap-1 rounded-lg border border-outline-variant bg-surface-container-lowest px-3 py-1.5 text-xs font-medium text-on-surface hover:bg-surface-container-low active:scale-95 transition-all outline-none focus-visible:ring-2 focus-visible:ring-secondary disabled:opacity-50"
+              >
+                <span className="material-symbols-outlined text-[16px]">refresh</span>
+                Retry
+              </button>
             </div>
           </div>
         )}

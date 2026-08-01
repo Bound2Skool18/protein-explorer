@@ -51,6 +51,26 @@ Tool definition: [`src/services/chat-tools.ts`](src/services/chat-tools.ts). Reg
 route (`src/app/api/chat/route.ts`) with `stopWhen: stepCountIs(5)` so the model calls the tool
 and then writes a follow-up sentence.
 
+## Stateful Search button — motion notes (FE-AA1)
+
+The Search button (`src/views/StatefulButton.tsx`, live on `/search`) choreographs its full
+lifecycle: **idle → hover/focus → loading → success/error → idle**, wired to the real UniProt
+search. A demo toggle on `/search` forces the success and error states on demand.
+
+Duration / easing choices:
+
+- **200ms, `ease-out`** for color and label swaps — fast enough to feel instant, long enough to
+  read as a transition rather than a snap.
+- **240ms, `cubic-bezier(0.22, 1, 0.36, 1)`** for the label ↔ spinner ↔ check slide, so each layer
+  *decelerates* into place instead of moving linearly.
+- **400ms, `ease-in-out`** for the error shake — one quick, assertive wobble, then done.
+- **700ms, linear** for the spinner loop — steady, so it reads as "working," not stuttering.
+
+Only `transform` and `opacity` animate, and the button has a fixed `min-width`, so nothing
+reflows (no layout thrash). It's interruptible (clicks are ignored mid-flight), keyboard
+accessible with a visible focus ring, and honors `prefers-reduced-motion` — the slide and shake
+are dropped, but color and fade feedback remain.
+
 ## Deployment
 
 Connected to Vercel via GitHub — every push to `master` triggers a new deployment.
