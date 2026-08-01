@@ -18,6 +18,7 @@ export function useProteinSearch() {
       setResults(await searchProteins(query));
     } catch (err) {
       setError(err instanceof Error ? err.message : "Search failed");
+      throw err; // re-throw so callers (e.g. StatefulButton) can react to failure
     } finally {
       setLoading(false);
     }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/viewmodels/useAuth";
 import { useFavorites } from "@/viewmodels/useFavorites";
@@ -10,23 +10,31 @@ import { SearchBar } from "@/views/SearchBar";
 import { ProteinList } from "@/views/ProteinList";
 import type { Protein } from "@/models/Protein";
 
+type DemoMode = "live" | "success" | "error";
+
 export function SearchPageContent() {
   const { user } = useAuth();
-  const { results, loading, error, search } = useProteinSearch();
+  const { results, error, search } = useProteinSearch();
   const { isFavorite, addFavorite, removeFavorite } = useFavorites(user?.uid);
   const { addEntry } = useSearchHistory(user?.uid);
   const searchParams = useSearchParams();
   const router = useRouter();
   const initialQuery = searchParams.get("q") ?? "";
+  const [demoMode, setDemoMode] = useState<DemoMode>("live");
 
-  function runSearch(query: string) {
-    search(query);
+  // Drives the Search button's success/error states. Demo mode lets reviewers force either on demand.
+  async function runSearch(query: string) {
     addEntry(query);
+    if (demoMode === "error") {
+      await new Promise((r) => setTimeout(r, 700));
+      throw new Error("Forced error (demo)");
+    }
+    await search(query);
   }
 
   useEffect(() => {
     if (initialQuery) {
-      runSearch(initialQuery);
+      runSearch(initialQuery).catch(() => {}); // error already surfaced via viewmodel state
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialQuery]);
@@ -50,7 +58,29 @@ export function SearchPageContent() {
         <p className="text-on-surface-variant mb-6">
           Search proteins by name, gene, or organism via UniProt.
         </p>
-        <SearchBar key={initialQuery} initialQuery={initialQuery} onSearch={runSearch} loading={loading} />
+        <SearchBar key={initialQuery} initialQuery={initialQuery} onSearch={runSearch} />
+
+        {/* Demo control (FE-AA1): force the button's success / error states on demand. */}
+        <div className="mt-4 flex items-center gap-2 text-xs">
+          <span className="text-on-surface-variant">Button demo:</span>
+          <div className="inline-flex rounded-md border border-outline-variant overflow-hidden">
+            {(["live", "success", "error"] as DemoMode[]).map((m) => (
+              <button
+                key={m}
+                type="button"
+                onClick={() => setDemoMode(m)}
+                className={`px-2.5 py-1 capitalize transition-colors outline-none focus-visible:ring-2 focus-visible:ring-secondary ${
+                  demoMode === m
+                    ? "bg-primary text-on-primary"
+                    : "bg-surface-container-lowest text-on-surface-variant hover:bg-surface-container-high"
+                }`}
+              >
+                {m === "live" ? "Live search" : `Force ${m}`}
+              </button>
+            ))}
+          </div>
+        </div>
+
         {error && (
           <p role="alert" className="mt-3 text-sm text-error">
             {error}

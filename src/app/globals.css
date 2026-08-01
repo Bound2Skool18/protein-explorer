@@ -56,3 +56,70 @@
     font-variation-settings: "FILL" 1, "wght" 400, "GRAD" 0, "opsz" 24;
   }
 }
+
+/* --- StatefulButton motion (transform/opacity only, no layout thrash) --- */
+.sb-layer {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 200ms ease, transform 240ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.sb-layer.is-in {
+  opacity: 1;
+  transform: translateY(0);
+}
+.sb-layer.is-out {
+  opacity: 0;
+  transform: translateY(120%);
+  pointer-events: none;
+}
+
+.sb-spinner {
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 9999px;
+  border: 2px solid rgb(255 255 255 / 0.4);
+  border-top-color: #fff;
+  animation: sb-spin 0.7s linear infinite;
+}
+@keyframes sb-spin {
+  to { transform: rotate(360deg); }
+}
+
+.sb-shake {
+  animation: sb-shake 0.4s ease-in-out;
+}
+@keyframes sb-shake {
+  10%, 90% { transform: translateX(-1px); }
+  20%, 80% { transform: translateX(2px); }
+  30%, 50%, 70% { transform: translateX(-4px); }
+  40%, 60% { transform: translateX(4px); }
+}
+
+/* Dark spinner for light tool cards (the button's sb-spinner is white). */
+.sb-spinner--muted {
+  border-color: rgb(0 0 0 / 0.15);
+  border-top-color: var(--color-on-surface-variant);
+}
+
+/* FE-07: tool state transitions morph in, not snap (opacity + slight rise). */
+.tool-fade {
+  animation: tool-fade 200ms ease-out;
+}
+@keyframes tool-fade {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Reduced motion: strip movement, KEEP feedback (color + opacity crossfade). */
+@media (prefers-reduced-motion: reduce) {
+  .sb-layer {
+    transition: opacity 120ms linear;
+    transform: none !important;
+  }
+  .sb-shake { animation: none; }
+  .sb-spinner { animation-duration: 1.4s; }
+  .tool-fade { animation: none; }
+}

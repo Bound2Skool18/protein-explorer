@@ -4,11 +4,20 @@ import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { useEffect, useRef, useState } from "react";
 import Markdown from "react-markdown";
+import type { ChatMessage } from "@/services/chat-tools";
+import {
+  ProteinResultCard,
+  ToolError,
+  ToolPending,
+  ToolRunning,
+} from "./ProteinToolParts";
 
 const BOTTOM_THRESHOLD_PX = 80;
 
 export function Chat() {
-  const { messages, sendMessage, status, stop } = useChat({
+  // <ChatMessage> makes message.parts typed: `part.input`/`part.output` on a
+  // tool part are the real Zod/return types, not `any`.
+  const { messages, sendMessage, status, stop } = useChat<ChatMessage>({
     transport: new DefaultChatTransport({ api: "/api/chat" }),
   });
   const [input, setInput] = useState("");
@@ -53,11 +62,17 @@ export function Chat() {
           .map((p) => p.text)
           .join("")
       : "";
+  // A tool part renders its own "working" treatment, so suppress the generic
+  // thinking dots once the assistant message has one.
+  const lastHasToolPart =
+    lastMessage?.role === "assistant" &&
+    lastMessage.parts.some((p) => p.type.startsWith("tool-"));
   // Show the thinking indicator until the first token of the reply actually
   // has content -- keyed on content presence, not on `status`, so the
   // indicator and the first token hand off in the same render rather than
   // the indicator vanishing a frame before text appears.
-  const showThinking = busy && lastMessage?.role === "assistant" && lastMessageText.length === 0;
+  const showThinking =
+    busy && lastMessage?.role === "assistant" && lastMessageText.length === 0 && !lastHasToolPart;
 
   return (
     <div className="flex flex-col h-[70vh] max-h-[700px]">
@@ -73,28 +88,55 @@ export function Chat() {
         )}
 
         {messages.map((message) => {
-          const text = message.parts
-            .filter((p) => p.type === "text")
-            .map((p) => p.text)
-            .join("");
-          const isUser = message.role === "user";
-
-          return (
-            <div key={message.id} className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
-              <div
-                className={
-                  isUser
-                    ? "max-w-[85%] sm:max-w-[75%] rounded-xl rounded-br-sm bg-primary text-on-primary px-4 py-2.5"
-                    : "max-w-[85%] sm:max-w-[75%] rounded-xl rounded-bl-sm bg-surface-container-lowest border border-outline-variant px-4 py-2.5"
-                }
-              >
-                {isUser ? (
+          // User message: one plain text bubble.
+          if (message.role === "user") {
+            const text = message.parts
+              .filter((p) => p.type === "text")
+              .map((p) => p.text)
+              .join("");
+            return (
+              <div key={message.id} className="flex justify-end">
+                <div className="max-w-[85%] sm:max-w-[75%] rounded-xl rounded-br-sm bg-primary text-on-primary px-4 py-2.5">
                   <p className="text-sm whitespace-pre-wrap">{text}</p>
-                ) : (
-                  <div className="text-sm text-on-surface prose-sm [&_p]:my-1 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_code]:font-mono [&_code]:text-xs [&_code]:bg-surface-container-low [&_code]:px-1 [&_code]:py-0.5 [&_code]:rounded">
-                    <Markdown>{text}</Markdown>
-                  </div>
-                )}
+                </div>
+              </div>
+            );
+          }
+
+          // Assistant message: render each part in order -- text as a bubble,
+          // tool parts as their state-specific component.
+          return (
+            <div key={message.id} className="flex justify-start">
+              <div className="max-w-[85%] sm:max-w-[75%] space-y-2">
+                {message.parts.map((part, i) => {
+                  if (part.type === "text") {
+                    if (!part.text) return null;
+                    return (
+                      <div
+                        key={i}
+                        className="rounded-xl rounded-bl-sm bg-surface-container-lowest border border-outline-variant px-4 py-2.5 text-sm text-on-surface prose-sm [&_p]:my-1 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_code]:font-mono [&_code]:text-xs [&_code]:bg-surface-container-low [&_code]:px-1 [&_code]:py-0.5 [&_code]:rounded"
+                      >
+                        <Markdown>{part.text}</Markdown>
+                      </div>
+                    );
+                  }
+
+                  // The tool-part state machine: four states → four shapes.
+                  if (part.type === "tool-lookupProtein") {
+                    switch (part.state) {
+                      case "input-streaming":
+                        return <ToolPending key={i} />;
+                      case "input-available":
+                        return <ToolRunning key={i} query={part.input.query} />;
+                      case "output-available":
+                        return <ProteinResultCard key={i} protein={part.output} />;
+                      case "output-error":
+                        return <ToolError key={i} message={part.errorText} />;
+                    }
+                  }
+
+                  return null;
+                })}
               </div>
             </div>
           );

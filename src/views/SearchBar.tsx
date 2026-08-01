@@ -1,19 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { StatefulButton } from "./StatefulButton";
 
 type SearchBarProps = {
-  onSearch: (query: string) => void;
-  loading: boolean;
+  onSearch: (query: string) => Promise<void>;
   initialQuery?: string;
 };
 
-export function SearchBar({ onSearch, loading, initialQuery = "" }: SearchBarProps) {
+export function SearchBar({ onSearch, initialQuery = "" }: SearchBarProps) {
   const [query, setQuery] = useState(initialQuery);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
+  // Enter in the box triggers the button's own click, so it runs the same animated cycle.
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    onSearch(query);
+    buttonRef.current?.click();
   }
 
   return (
@@ -34,13 +36,7 @@ export function SearchBar({ onSearch, loading, initialQuery = "" }: SearchBarPro
           onChange={(e) => setQuery(e.target.value)}
         />
       </div>
-      <button
-        type="submit"
-        disabled={loading}
-        className="bg-primary text-on-primary px-6 py-3.5 rounded-lg hover:opacity-90 transition-opacity font-bold shadow-sm whitespace-nowrap disabled:opacity-50"
-      >
-        {loading ? "Searching…" : "Search"}
-      </button>
+      <StatefulButton ref={buttonRef} onAction={() => onSearch(query)} />
     </form>
   );
 }
