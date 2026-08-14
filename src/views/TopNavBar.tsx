@@ -36,6 +36,7 @@ export function TopNavBar({ userEmail, onMenuClick }: TopNavBarProps) {
               <Link
                 key={link.href}
                 href={link.href}
+                prefetch={false}
                 className={
                   active
                     ? "text-secondary border-b-2 border-secondary pb-[1.125rem] pt-5 text-sm"
@@ -65,6 +66,7 @@ export function TopNavBar({ userEmail, onMenuClick }: TopNavBarProps) {
           ) : (
             <Link
               href="/login"
+              prefetch={false}
               title="Log in"
               className="ml-2 w-8 h-8 rounded-full bg-surface-container-low text-on-surface-variant flex items-center justify-center border border-outline-variant hover:text-on-surface transition-colors"
             >

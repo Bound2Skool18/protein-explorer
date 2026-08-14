@@ -10,18 +10,20 @@ type SidebarProps = {
   onLogout: () => void;
 };
 
-// `/assistant` (react-markdown) and `/workspace` (three.js + leva) each pull
-// in a heavy chunk. Next.js prefetches every visible Link's route by
-// default, which was loading both bundles on every dashboard page just
-// because the sidebar linking to them is always on screen -- prefetch is
-// off for those two so only visiting the route itself pays for it.
+// Next.js prefetches every visible Link's route by default. The sidebar is
+// on screen on every dashboard page, so that meant six routes' worth of JS
+// (react-markdown for /assistant, three.js+leva for /workspace, Firebase
+// paths for /favorites and /history) all being fetched in the background on
+// every page load -- measurably inflating first-load time under Lighthouse's
+// mobile network simulation. Prefetch is off everywhere; a route's JS now
+// loads only when a visitor actually goes there.
 const NAV_ITEMS = [
-  { href: "/search", icon: "search", label: "Search", prefetch: true },
+  { href: "/search", icon: "search", label: "Search", prefetch: false },
   { href: "/assistant", icon: "smart_toy", label: "Assistant", prefetch: false },
-  { href: "/favorites", icon: "grade", label: "Favorites", prefetch: true },
-  { href: "/history", icon: "history", label: "History", prefetch: true },
+  { href: "/favorites", icon: "grade", label: "Favorites", prefetch: false },
+  { href: "/history", icon: "history", label: "History", prefetch: false },
   { href: "/workspace", icon: "biotech", label: "Workspace", prefetch: false },
-  { href: "/settings", icon: "settings", label: "Settings", prefetch: true },
+  { href: "/settings", icon: "settings", label: "Settings", prefetch: false },
 ];
 
 export function Sidebar({ open, onClose, userEmail, onLogout }: SidebarProps) {
@@ -93,6 +95,7 @@ export function Sidebar({ open, onClose, userEmail, onLogout }: SidebarProps) {
           ) : (
             <Link
               href="/login"
+              prefetch={false}
               onClick={onClose}
               className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-secondary font-bold hover:bg-surface-container-high transition-all"
             >
