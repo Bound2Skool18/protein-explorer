@@ -33,6 +33,10 @@ unexplained gap.
 
 ### Screenshots
 
+(The raw Lighthouse JSON/HTML reports these come from aren't kept in the repo -- they embed full
+network-request logs, including client-side API keys as URL query params, which don't belong in
+git even when the key itself is meant to be public. Screenshots of the summary only.)
+
 **Home (`/`) — the redirect fix.** Note the real warning Lighthouse surfaced in the "before" run:
 it detected the `/` → `/search` redirect chain and flagged that as the reason the page "may not
 be loading as expected."

@@ -23,6 +23,13 @@ dist-ssr
 /playwright-report/
 /test-results/
 
+# Raw Lighthouse reports -- these embed full network request logs (URLs,
+# query params) from the live page, which can include client-side API keys.
+# Keep only the summary screenshots referenced in AUDIT.md, not the raw
+# json/html.
+/audit/before/
+/audit/after/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
