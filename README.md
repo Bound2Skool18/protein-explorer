@@ -110,6 +110,22 @@ proteins instead of small illustrative molecules — the reason this stayed proc
 cartoon/ribbon secondary-structure rendering is its own significant project, not something to
 bolt on inside a 5-hour assignment.
 
+## Shader hero (`/about`, FE-AA3)
+
+A fullscreen WebGL fragment shader — deep indigo → teal → violet flow ribbons (three summed sine
+waves, not a noise texture), warped gently toward the cursor, with a vignette that keeps the
+headline readable and a subtle grain pass to stop the gradient from banding. Plain WebGL rather
+than react-three-fiber: it's a 2D effect with no scene graph, so a canvas + two small shaders is
+the whole implementation (`src/views/ShaderHero.tsx`), no 3D library needed. Uses all three core
+uniforms (`u_time`, `u_resolution`, `u_mouse`). GLSL source is commented section-by-section in the
+same file.
+
+**Perf/reduced-motion fallback in one line:** `prefers-reduced-motion` renders one static shader
+frame instead of starting the animation loop, the tab-hidden case pauses/resumes the same loop via
+the Page Visibility API, devicePixelRatio is capped at 2x for the canvas's backing store, and the
+canvas has a static CSS gradient in the same palette as its own background — so a browser with no
+WebGL support (or a failed context) shows that gradient and nothing ever throws.
+
 ## Deployment
 
 Connected to Vercel via GitHub — every push to `master` triggers a new deployment.
