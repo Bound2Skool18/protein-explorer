@@ -10,13 +10,18 @@ type SidebarProps = {
   onLogout: () => void;
 };
 
+// `/assistant` (react-markdown) and `/workspace` (three.js + leva) each pull
+// in a heavy chunk. Next.js prefetches every visible Link's route by
+// default, which was loading both bundles on every dashboard page just
+// because the sidebar linking to them is always on screen -- prefetch is
+// off for those two so only visiting the route itself pays for it.
 const NAV_ITEMS = [
-  { href: "/search", icon: "search", label: "Search" },
-  { href: "/assistant", icon: "smart_toy", label: "Assistant" },
-  { href: "/favorites", icon: "grade", label: "Favorites" },
-  { href: "/history", icon: "history", label: "History" },
-  { href: "/workspace", icon: "biotech", label: "Workspace" },
-  { href: "/settings", icon: "settings", label: "Settings" },
+  { href: "/search", icon: "search", label: "Search", prefetch: true },
+  { href: "/assistant", icon: "smart_toy", label: "Assistant", prefetch: false },
+  { href: "/favorites", icon: "grade", label: "Favorites", prefetch: true },
+  { href: "/history", icon: "history", label: "History", prefetch: true },
+  { href: "/workspace", icon: "biotech", label: "Workspace", prefetch: false },
+  { href: "/settings", icon: "settings", label: "Settings", prefetch: true },
 ];
 
 export function Sidebar({ open, onClose, userEmail, onLogout }: SidebarProps) {
@@ -59,6 +64,7 @@ export function Sidebar({ open, onClose, userEmail, onLogout }: SidebarProps) {
               <li key={item.href}>
                 <Link
                   href={item.href}
+                  prefetch={item.prefetch}
                   onClick={onClose}
                   className={
                     active

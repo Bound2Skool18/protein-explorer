@@ -1,9 +1,9 @@
 "use client";
 
-import { Suspense, useMemo } from "react";
+import { useMemo } from "react";
 import * as THREE from "three";
 import { Canvas } from "@react-three/fiber";
-import { ContactShadows, Environment, Html, OrbitControls } from "@react-three/drei";
+import { ContactShadows, Html, OrbitControls } from "@react-three/drei";
 import { ELEMENTS, type Atom, type Molecule } from "@/models/Molecule";
 
 export type MoleculeStyle = "ballAndStick" | "spaceFilling";
@@ -144,12 +144,17 @@ export default function MoleculeScene({
       frameloop={frameloop}
       camera={{ position: [2.5, 2, 3.5], fov: 45 }}
       onPointerMissed={() => onSelectAtom(null)}
+      role="img"
+      aria-label={`3D model of ${molecule.name} (${molecule.formula}), ${molecule.shape.toLowerCase()}. The caption below this scene has the same information and lists the controls.`}
     >
-      <ambientLight intensity={0.6} />
-      <directionalLight position={[3, 4, 2]} intensity={1.2} castShadow shadow-mapSize={[1024, 1024]} />
-      <Suspense fallback={null}>
-        <Environment preset="studio" />
-      </Suspense>
+      {/* Plain lights instead of drei's <Environment>: an HDRI preset is a
+          ~1.7MB fetch (from a third-party CDN) for reflections on a handful
+          of matte spheres -- not worth the payload for this scene. Three
+          lights approximate the same "staged" look for a few KB of code. */}
+      <ambientLight intensity={0.7} />
+      <directionalLight position={[3, 4, 2]} intensity={1.4} castShadow shadow-mapSize={[1024, 1024]} />
+      <directionalLight position={[-3, 2, -2]} intensity={0.4} />
+      <pointLight position={[0, 2, 3]} intensity={0.3} />
       <MoleculeModel
         molecule={molecule}
         moleculeStyle={moleculeStyle}

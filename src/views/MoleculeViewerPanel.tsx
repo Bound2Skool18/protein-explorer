@@ -169,7 +169,22 @@ export function MoleculeViewerPanel() {
         {molecule.name} ({molecule.formula}) — {molecule.shape}. Drag to orbit, scroll or pinch to
         zoom, click an atom to label it.
       </p>
-      <Leva collapsed={isNarrowViewport} titleBar={{ title: "Molecule controls" }} />
+      {/* Leva's default dark theme has a low-contrast title/label color
+          (~1.9:1 against its panel background, WCAG requires 4.5:1) --
+          overridden here since it's the only accessibility failure the
+          Lighthouse audit found on this page. */}
+      <Leva
+        collapsed={isNarrowViewport}
+        titleBar={{ title: "Molecule controls" }}
+        theme={{
+          colors: {
+            highlight1: "#c7c7cf",
+            highlight2: "#e4e4e7",
+            highlight3: "#ffffff",
+            folderTextColor: "#e4e4e7",
+          },
+        }}
+      />
     </div>
   );
 }

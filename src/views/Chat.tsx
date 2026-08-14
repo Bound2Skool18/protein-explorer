@@ -90,6 +90,9 @@ export function Chat() {
       <div
         ref={scrollRef}
         onScroll={handleScroll}
+        role="log"
+        aria-live="polite"
+        aria-label="Conversation"
         className="flex-1 overflow-y-auto overscroll-contain space-y-4 pb-4"
       >
         {messages.length === 0 && (
