@@ -6,12 +6,15 @@ import { Sidebar } from "@/views/Sidebar";
 import { TopNavBar } from "@/views/TopNavBar";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const { user, loading, logout } = useAuth();
+  // `loading` no longer blocks the whole page behind a blank screen -- every
+  // route here (search, chat, workspace) already renders correctly for a
+  // signed-out visitor, so there's nothing to gain by waiting on Firebase
+  // before painting anything. This was the actual LCP bottleneck: Lighthouse
+  // was measuring plain page text as the "largest contentful paint" element,
+  // arriving seconds late only because it sat behind this gate. The
+  // logged-in-only chrome (avatar, logout) just renders once `user` resolves.
+  const { user, logout } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-
-  if (loading) {
-    return <p className="p-6 text-sm text-on-surface-variant">Loading…</p>;
-  }
 
   return (
     <div className="bg-background text-on-background flex h-dvh overflow-hidden">
