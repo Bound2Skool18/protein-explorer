@@ -29,7 +29,7 @@ export function TopNavBar({ userEmail, onMenuClick }: TopNavBarProps) {
           <span className="material-symbols-outlined">menu</span>
         </button>
 
-        <nav className="hidden md:flex items-center gap-6 h-full">
+        <nav aria-label="Section" className="hidden md:flex items-center gap-6 h-full">
           {LINKS.map((link) => {
             const active = link.href === pathname;
             return (

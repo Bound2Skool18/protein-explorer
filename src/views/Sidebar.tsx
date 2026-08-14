@@ -39,6 +39,7 @@ export function Sidebar({ open, onClose, userEmail, onLogout }: SidebarProps) {
         />
       )}
       <nav
+        aria-label="Primary"
         className={`fixed left-0 top-0 h-screen w-64 flex flex-col py-8 bg-surface-container-low border-r border-outline-variant z-30 transition-transform duration-200 md:translate-x-0 ${
           open ? "translate-x-0" : "-translate-x-full"
         }`}

@@ -18,7 +18,7 @@ export function AuthPanel({ error, onLogin, onRegister }: AuthPanelProps) {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
+    <main className="min-h-screen flex items-center justify-center bg-background">
       <form
         onSubmit={handleLogin}
         className="mx-auto w-full max-w-sm space-y-4 p-8 bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm"
@@ -82,6 +82,6 @@ export function AuthPanel({ error, onLogin, onRegister }: AuthPanelProps) {
           </button>
         </div>
       </form>
-    </div>
+    </main>
   );
 }

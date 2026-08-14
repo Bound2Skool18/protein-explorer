@@ -96,6 +96,16 @@ describe("Chat", () => {
     expect(regenerate).toHaveBeenCalledTimes(1);
   });
 
+  it("moves keyboard focus to the Stop button once a reply starts generating", () => {
+    // The text input becomes disabled the instant status is busy, which
+    // drops focus to <body> with no way back except tabbing through the
+    // whole page -- Stop autofocuses on mount so a keyboard user's focus
+    // stays on the one control that matters while a reply streams in.
+    mockChat({ status: "submitted", messages: [userText("1", "hi")] });
+    render(<Chat />);
+    expect(screen.getByRole("button", { name: "Stop" })).toHaveFocus();
+  });
+
   it("renders all four tool-lookupProtein lifecycle states distinctly", () => {
     const message: ChatMessage = {
       id: "1",

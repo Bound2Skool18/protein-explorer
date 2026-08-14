@@ -237,8 +237,14 @@ export function Chat() {
           className="flex-1 min-w-0 rounded-lg border border-outline-variant bg-surface-container-lowest px-4 py-3 text-base text-on-surface placeholder-on-surface-variant focus:ring-2 focus:ring-secondary focus:border-secondary transition-all outline-none disabled:opacity-60"
         />
         {busy ? (
+          // autoFocus: the input becomes disabled the instant this mounts,
+          // which drops keyboard focus to <body> with nothing to reach it
+          // again except tabbing through the entire page from the top --
+          // this keeps a keyboard user's focus on the one control that
+          // matters while a reply is generating.
           <button
             type="button"
+            autoFocus
             onClick={() => stop()}
             className="shrink-0 rounded-lg bg-surface-container-high text-on-surface px-4 py-3 text-sm font-bold hover:opacity-90 transition-opacity"
           >
