@@ -1,0 +1,20 @@
+--- chromium-desktop ---
+{"target":"chromium-desktop","path":"/about","status":200,"consoleErrors":[],"error":null}
+{"target":"chromium-desktop","path":"/search","status":200,"consoleErrors":[],"error":null}
+{"target":"chromium-desktop","path":"/assistant","status":200,"consoleErrors":[],"error":null}
+{"target":"chromium-desktop","path":"/workspace","status":200,"consoleErrors":[],"error":null}
+{"target":"chromium-desktop","path":"/login","status":200,"consoleErrors":[],"error":null}
+--- firefox-desktop ---
+{"target":"firefox-desktop","path":"/about","status":200,"consoleErrors":[],"error":null}
+{"target":"firefox-desktop","path":"/search","status":200,"consoleErrors":[],"error":null}
+{"target":"firefox-desktop","path":"/assistant","status":200,"consoleErrors":[],"error":null}
+{"target":"firefox-desktop","path":"/workspace","status":200,"consoleErrors":[],"error":null}
+{"target":"firefox-desktop","path":"/login","status":200,"consoleErrors":[],"error":null}
+
+Note: the WebKit (Safari engine) pass is missing from this log because
+Playwright's local WebKit build hung indefinitely on this machine -- a
+known issue with its "frozen" (no-longer-updated) build on this macOS
+version, confirmed by Playwright's own install-time warning, not a bug in
+the app. See README.md's "Cross-browser pass" section for how Safari
+compatibility was verified instead (compiled-CSS feature audit + a
+requested manual spot-check).
