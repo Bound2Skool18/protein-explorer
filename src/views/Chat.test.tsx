@@ -9,7 +9,12 @@ import type { ChatMessage } from "@/services/chat-tools";
 // state, so Chat.tsx's fetch to /api/chat is never exercised.
 vi.mock("@ai-sdk/react", () => ({ useChat: vi.fn() }));
 
-const mockedUseChat = vi.mocked(useChat);
+// useChat's return type is parametrized by the message type, but vi.mocked()
+// can't infer that generic instantiation from the bare function reference --
+// this cast just tells the mock plumbing to expect our ChatMessage shape.
+const mockedUseChat = vi.mocked(useChat) as unknown as {
+  mockReturnValue: (value: ReturnType<typeof useChat<ChatMessage>>) => void;
+};
 
 function mockChat(overrides: Partial<ReturnType<typeof useChat<ChatMessage>>>) {
   mockedUseChat.mockReturnValue({
@@ -20,7 +25,7 @@ function mockChat(overrides: Partial<ReturnType<typeof useChat<ChatMessage>>>) {
     error: undefined,
     regenerate: vi.fn(),
     ...overrides,
-  } as unknown as ReturnType<typeof useChat<ChatMessage>>);
+  } as ReturnType<typeof useChat<ChatMessage>>);
 }
 
 function userText(id: string, text: string): ChatMessage {

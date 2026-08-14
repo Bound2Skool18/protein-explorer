@@ -71,6 +71,45 @@ reflows (no layout thrash). It's interruptible (clicks are ignored mid-flight), 
 accessible with a visible focus ring, and honors `prefers-reduced-motion` — the slide and shake
 are dropped, but color and fade feedback remain.
 
+## 3D molecule viewer (Workspace)
+
+`/workspace` is a small interactive 3D experience: a ball-and-stick / space-filling molecule
+viewer built with **React Three Fiber**. Water, ammonia, methane, and carbon dioxide are rendered
+from real bond lengths and bond angles computed in code (`src/services/molecules.ts`), not from a
+loaded model file — there's no GLB/GLTF asset at all, so there's nothing to compress or optimize
+on that front; the entire "model" is a few dozen floats.
+
+- **Interactions beyond orbiting:** a [leva](https://github.com/pmndrs/leva) panel swaps the
+  molecule, toggles ball-and-stick vs. space-filling rendering, and drives an auto-rotate
+  animation; clicking an atom highlights it and labels it (element + index) via `<Html>`.
+- **Loads responsibly:** `src/views/three/MoleculeScene.tsx` (three.js + `@react-three/fiber` +
+  `@react-three/drei`) is loaded with `next/dynamic({ ssr: false })` from
+  `src/views/MoleculeViewerPanel.tsx`, so it's fetched only when a visitor actually opens
+  `/workspace` — every other route (`/search`, `/assistant`, etc.) never downloads it.
+- **Fallbacks:** if `getContext("webgl")` fails, or if `prefers-reduced-motion` is set, the canvas
+  is replaced by `src/views/three/WebGLFallback.tsx`, a static flat projection of the same atom
+  coordinates (reduced-motion users get a "show it anyway" button, since that's a request they can
+  make, not a capability they lack).
+- **Frame budget:** the scene only re-renders continuously (`frameloop="always"`) while
+  auto-rotate is on; otherwise it's `frameloop="demand"` — 0 extra frames/sec at idle, and drag
+  input still invalidates and renders normally under "demand" (this is a documented drei
+  `OrbitControls` behavior, not something bolted on). Geometry is a few dozen spheres/cylinders
+  with no textures, so frame rate isn't a real constraint on any device this runs on.
+- **Mobile:** `OrbitControls`' default touch mapping (one-finger rotate, two-finger pinch/pan)
+  works out of the box. The leva panel is fixed-position and doesn't reflow on its own, so it
+  starts **collapsed** below the `md` breakpoint (768px) instead of covering the canvas.
+
+**Perf note (production build):** the three.js + `@react-three/fiber` + `@react-three/drei` chunk
+is 964KB raw / 260KB gzipped; leva adds roughly another 150KB gzipped. That's a real cost — but
+it's paid exactly once, exactly by visitors who open `/workspace`, entirely separate from the main
+app bundle every other page ships. The lazy `next/dynamic` boundary is what makes that trade-off
+acceptable; without it, every route in the app would carry three.js's weight.
+
+**With more time:** DRACO-compressed real PDB structures (via three.js's `PDBLoader`) for actual
+proteins instead of small illustrative molecules — the reason this stayed procedural is that
+cartoon/ribbon secondary-structure rendering is its own significant project, not something to
+bolt on inside a 5-hour assignment.
+
 ## Deployment
 
 Connected to Vercel via GitHub — every push to `master` triggers a new deployment.
