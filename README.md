@@ -153,9 +153,9 @@ minimum browser baseline: **Safari 16.4+**, released March 2023 — a completely
 a 2026 app, not a real compatibility risk) and a source-level scan confirming no Safari-only-broken
 APIs are used anywhere (`requestIdleCallback`, `:has()`, `backdrop-filter`, etc. — none present).
 The WebGL work (`/workspace`, `/about`) deliberately targets WebGL1 (`gl.getContext("webgl")`,
-never `webgl2`-only features), which Safari has supported since version 8. A real Safari/mobile
-Safari spot-check is still worth doing by hand before treating this as fully proven — the audit
-above is strong evidence, not a substitute for actually looking at it.
+never `webgl2`-only features), which Safari has supported since version 8. **Manually confirmed
+working in real Safari** after the automation limitation above — the compiled-CSS/API audit's
+prediction held up in practice, not just on paper.
 
 ## Key decisions
 

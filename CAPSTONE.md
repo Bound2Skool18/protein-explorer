@@ -55,7 +55,7 @@ These already exist as their own documents rather than duplicated here:
 |---|---|---|
 | Environment variables set in production | ✅ Done | Vercel project settings; table of what's required in [README.md](README.md#environment-variables) |
 | Custom domain | ⏭️ Skipped, intentionally | Optional per the brief; default `*.vercel.app` domain is live and stable |
-| Cross-browser pass | ✅ Done (Chromium/Firefox automated), ⚠️ Safari by audit not live automation | [README.md § Cross-browser pass](README.md#cross-browser-pass) explains exactly why, honestly |
+| Cross-browser pass | ✅ Done — Chromium/Firefox automated, Safari confirmed manually after WebKit automation hit a tooling limitation | [README.md § Cross-browser pass](README.md#cross-browser-pass) explains exactly why, honestly |
 | Rate limiting / input caps on the AI route | ✅ Done, with a stated limitation | [README.md § Production hygiene](README.md#production-hygiene) — in-memory, not distributed; documented as such, not hidden |
 | Sensible `maxDuration` on the streaming handler | ✅ Done | 30s, commented in `src/app/api/chat/route.ts` |
 | Error states / fallbacks exist for real failure modes | ✅ Done | Chat retry card on stream failure, WebGL/`prefers-reduced-motion` fallbacks on both 3D pages, a dashboard `error.tsx` boundary |
