@@ -67,10 +67,13 @@ export function TopNavBar({ userEmail, onMenuClick }: TopNavBarProps) {
             <Link
               href="/login"
               prefetch={false}
+              aria-label="Log in"
               title="Log in"
               className="ml-2 w-8 h-8 rounded-full bg-surface-container-low text-on-surface-variant flex items-center justify-center border border-outline-variant hover:text-on-surface transition-colors"
             >
-              <span className="material-symbols-outlined text-[18px]">person</span>
+              <span className="material-symbols-outlined text-[18px]" aria-hidden>
+                person
+              </span>
             </Link>
           )}
         </div>
