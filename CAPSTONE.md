@@ -39,9 +39,11 @@ These already exist as their own documents rather than duplicated here:
 - **Architecture overview:** [README.md § Architecture
   overview](README.md#architecture-overview) for the short version, [HOW_IT_WORKS.md](HOW_IT_WORKS.md)
   for a full request-trace walkthrough.
-- **Testing evidence:** 23 Vitest/React Testing Library component tests plus one Playwright
-  end-to-end test of the primary search flow — [README.md § Testing](README.md#testing-fe-09),
-  CI screenshot and setup in the FE-09 submission.
+- **Testing evidence:** 42 Vitest/React Testing Library tests covering 9 of 17 view components
+  (52.9%, clearing this capstone's own ≥50% bar) plus one Playwright end-to-end test of the
+  primary search flow — [README.md § Testing](README.md#testing-fe-09). Writing the TopNavBar
+  test surfaced a real accessible-name bug (a login link's accessible name was "person," not "Log
+  in") that got fixed, not just tested around.
 - **Performance & accessibility audit:** full Lighthouse mobile before/after (every page improved
   from failing the 80-point floor to 86–94; three of five clear 90) plus a real accessibility
   bug found by manual keyboard testing that no automated scanner caught —

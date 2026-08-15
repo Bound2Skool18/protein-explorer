@@ -276,12 +276,13 @@ WebGL support (or a failed context) shows that gradient and nothing ever throws.
 
 ## Testing (FE-09)
 
-22+ Vitest/React Testing Library component tests (chat rendering across pending/streaming/error
-states and all four tool-lifecycle states, form validation, tool-result cards), all querying by
-role/label rather than test IDs, plus one Playwright end-to-end test covering the primary search
-flow with the UniProt API mocked at the network boundary. The AI route is never called for real in
-tests — `useChat` is mocked so component tests assert on rendered state, not on Groq being up.
-Full CI wiring in `.github/workflows/test.yml`.
+42 Vitest/React Testing Library tests across 9 of 17 view components (chat rendering across
+pending/streaming/error states and all four tool-lifecycle states, form validation, tool-result
+cards, nav active-state and auth-conditional rendering, the search button's state machine), all
+querying by role/label rather than test IDs, plus one Playwright end-to-end test covering the
+primary search flow with the UniProt API mocked at the network boundary. The AI route is never
+called for real in tests — `useChat` is mocked so component tests assert on rendered state, not on
+Groq being up. Full CI wiring in `.github/workflows/test.yml`.
 
 ## Accessibility & performance (FE-10)
 
